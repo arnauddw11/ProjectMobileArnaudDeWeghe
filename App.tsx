@@ -9,7 +9,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Favorites from './src/screens/Favorites';
 import ShoppingCart from './src/screens/ShoppingCart';
 import Map from './src/screens/Map';
-
+import Login from './src/screens/Login';
 
 const Tab = createBottomTabNavigator();
 
@@ -50,6 +50,15 @@ export default function App() {
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="map" size={40} color="black"/>
+            ),
+          }} 
+        />
+        <Tab.Screen 
+          name="Login" 
+          component={Login} 
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialIcons name="account-circle" size={40} color="black"/>
             ),
           }} 
         />
