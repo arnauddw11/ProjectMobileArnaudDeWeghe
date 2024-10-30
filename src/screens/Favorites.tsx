@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-const HomeScreen = () => {
+const Favorites = () => {
     return (
         <View style={styles.container}>
-            <Text>Welkom bij Ciné Gent!</Text>
+            <Text>Favorites</Text>
         </View>
     );
 }
@@ -16,4 +16,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;
+export default Favorites;

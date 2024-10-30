@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-const HomeScreen = () => {
+const Map = () => {
     return (
         <View style={styles.container}>
-            <Text>Welkom bij Ciné Gent!</Text>
+            <Text>No cinemas near you!</Text>
         </View>
     );
 }
@@ -16,4 +16,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen;
+export default Map;
