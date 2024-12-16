@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Alert } from "react-native";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
+// Import your JSON data
+import biosGentData from '../json/bios_gent.json';
+
 const Map = () => {
+const ghentLatitude = 51.0543;
+const ghentLongitude = 3.7267;
 
 const [location, setLocation] = useState<{
     latitude: number;
@@ -32,15 +37,28 @@ return (
         <MapView
         style={styles.map}
         initialRegion={{
-            latitude: location.latitude,
-            longitude: location.longitude,
+            latitude: ghentLatitude,
+            longitude: ghentLongitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
         }}
-        />
+        >
+          {/* Render markers from biosGentData */}
+        {biosGentData.map((item, index) => (
+            <Marker
+            key={index}
+            coordinate={{
+                latitude: item.geometry.geometry.coordinates[1],
+                longitude: item.geometry.geometry.coordinates[0],
+            }}
+            title={item.naam}
+            description={item.ligging}
+            />
+        ))}
+        </MapView>
     ) : (
         <View style={styles.loadingContainer}>
-        {/* <Alert alert={"Fetching location..."} /> */}
+          {/* Optionally, show a loading spinner or other UI */}
         </View>
     )}
     </View>

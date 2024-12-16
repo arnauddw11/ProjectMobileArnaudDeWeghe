@@ -1,0 +1,44 @@
+[
+    {
+    "geometry": {
+        "type": "Feature",
+        "geometry": {
+        "coordinates": [3.721641058971095, 51.05370721294204],
+        "type": "Point"
+        },
+        "properties": {}
+    },
+    "et_id": null,
+    "naam": "Sphinx",
+    "ligging": "Sint-Michielshelling 3",
+    "geo_point_2d": { "lon": 3.721641058971095, "lat": 51.05370721294204 }
+    },
+    {
+    "geometry": {
+        "type": "Feature",
+        "geometry": {
+        "coordinates": [3.733817443271271, 51.04877814791104],
+        "type": "Point"
+        },
+        "properties": {}
+    },
+    "et_id": null,
+    "naam": "Studio Skoop",
+    "ligging": "Sint-Annaplein 63",
+    "geo_point_2d": { "lon": 3.733817443271271, "lat": 51.04877814791104 }
+    },
+    {
+    "geometry": {
+        "type": "Feature",
+        "geometry": {
+        "coordinates": [3.730197656681066, 51.04065942566722],
+        "type": "Point"
+        },
+        "properties": {}
+    },
+    "et_id": null,
+    "naam": "Kinepolis Gent",
+    "ligging": "Ter Platen 12",
+    "geo_point_2d": { "lon": 3.730197656681066, "lat": 51.04065942566722 }
+    }
+]
