@@ -1,3 +1,4 @@
+import "../global.css";
 import { StatusBar } from 'expo-status-bar';
 import Header from './src/components/Header';
 import { StyleSheet, Text, View } from 'react-native';
