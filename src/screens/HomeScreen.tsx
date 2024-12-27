@@ -2,9 +2,11 @@ import React from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import { useMovies } from "../hooks/useMovies";
 import MovieComponent from "../components/MovieComponent";
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 
 const HomeScreen: React.FC = () => {
   const { data, isLoading, isError, error } = useMovies();
+  const navigation = useNavigation(); // Access navigation instance
 
   if (isLoading) {
     return (
@@ -26,13 +28,16 @@ const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Welkom bij Ciné Gent!</Text>
       <FlatList
-        data={data?.results} // Array of movies
-        keyExtractor={(item) => item.id.toString()} // Unique key for each movie
+        data={data?.results}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <MovieComponent
             title={item.title}
             overview={item.overview}
             posterPath={item.poster_path}
+            navigateToDetails={() =>
+              navigation.navigate("movie", { movie: item }) // Pass movie data
+            }
           />
         )}
       />

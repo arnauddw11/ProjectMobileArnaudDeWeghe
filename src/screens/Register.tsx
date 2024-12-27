@@ -24,7 +24,7 @@ const validationSchema = Yup.object().shape({
         .required("Wachtwoord is verplicht!")
         .min(8, "Wachtwoord moet minstens uit 8 tekens bestaan."),
     confirmPassword: Yup.string()
-        .oneOf([Yup.ref("password"), null], "Wachtwoorden komen niet overeen.")
+        .oneOf([Yup.ref("password")], "Wachtwoorden komen niet overeen.")
         .required("Bevestig je wachtwoord!"),
 });
 
@@ -99,7 +99,6 @@ const Register = () => {
                                 fontSize: 16,
                             }}
                             ref={passwordRef}
-                            onSubmitEditing={() => confirmPasswordRef.current?.focus()}
                         />
                         <TouchableOpacity
                             onPress={() => setPasswordVisible(!passwordVisible)}
@@ -152,7 +151,7 @@ const Register = () => {
                 </TouchableOpacity>
 
                 <StyledButton
-                    onPress={handleSubmit}
+                    onPress={() => handleSubmit()} 
                     className="bg-blue-600 mt-6 py-3 rounded-lg"
                 >
                     <StyledText className="text-white text-lg font-bold text-center">

@@ -1,26 +1,31 @@
 import React from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
 // Define the props interface
 interface MovieComponentProps {
-  title: string;
-  overview: string;
-  posterPath: string;
+  title: string | undefined; // Allow undefined to handle potential issues
+  overview: string | undefined;
+  posterPath: string | undefined;
+  navigateToDetails: () => void; // Ensure this is included
 }
 
 // Use the props in the component
-const MovieComponent: React.FC<MovieComponentProps> = ({ title, overview, posterPath }) => {
+const MovieComponent: React.FC<MovieComponentProps> = ({ title, overview, posterPath, navigateToDetails }) => {
   // Use the 'original' size for the poster image URL
-  const imageUrl = `https://image.tmdb.org/t/p/original${posterPath}`;
+  const imageUrl = posterPath ? `https://image.tmdb.org/t/p/original${posterPath}` : "";
 
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: imageUrl }} style={styles.poster} />
+    <TouchableOpacity style={styles.container} onPress={navigateToDetails}>
+      {posterPath ? (
+        <Image source={{ uri: imageUrl }} style={styles.poster} />
+      ) : (
+        <View style={[styles.poster, { backgroundColor: "#ccc" }]} /> // Placeholder if no image
+      )}
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.overview}>{overview}</Text>
+        <Text style={styles.title}>{title || "Untitled Movie"}</Text> {/* Fallback title */}
+        <Text style={styles.overview}>{overview || "No description available."}</Text> {/* Fallback overview */}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -10,6 +10,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { createStackNavigator } from "@react-navigation/stack";
 import AuthNavigator from "../navigation/AuthStackNavigator"; 
+import MovieStackNavigator from "./MovieStackNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -27,7 +28,7 @@ const BottomTabNavigator = () => {
         <Tab.Navigator>
             <Tab.Screen
                 name="Home"
-                component={HomeScreen}
+                component={MovieStackNavigator}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <MaterialIcons name="home-filled" size={40} color="black" />
@@ -63,7 +64,7 @@ const BottomTabNavigator = () => {
             />
             <Tab.Screen
                 name="Account"
-                component={user ? AccountScreen : AuthNavigator} // Use the AuthNavigator if not logged in
+                component={user ? AccountScreen : AuthNavigator} 
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <MaterialIcons name="account-circle" size={40} color="black" />

@@ -79,9 +79,6 @@ const Login = () => {
                         error={touched.email && !!errors.email}
                         errorLabel={errors.email}
                         placeholder="Email"
-                        onSubmitEditing={() => {
-                            passwordRef.current?.focus();
-                        }}
                         returnKeyType="next"
                         autoCapitalize="none"
                         autoComplete="email"
@@ -99,7 +96,7 @@ const Login = () => {
                             errorLabel={errors.password}
                             ref={passwordRef}
                             placeholder="Wachtwoord"
-                            secureTextEntry={!passwordVisible} // Conditionally hide/show password
+                            secureTextEntry={!passwordVisible}
                             autoCapitalize="none"
                             autoComplete="current-password"
                             onChangeText={handleChange("password")}
@@ -111,7 +108,7 @@ const Login = () => {
                             }}
                         />
                         <TouchableOpacity
-                            onPress={() => setPasswordVisible(!passwordVisible)} // Toggle password visibility
+                            onPress={() => setPasswordVisible(!passwordVisible)} 
                             className="absolute right-3 top-1/2 transform -translate-y-1/2"
                         >
                             <MaterialIcons
@@ -130,7 +127,7 @@ const Login = () => {
                 ) : null}
 
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('register')} // Navigate to the register screen
+                    onPress={() => navigation.navigate('register')}
                     className="mt-4"
                 >
                     <StyledText className="text-sm text-right text-blue-600 underline">
