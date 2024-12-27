@@ -13,8 +13,9 @@ import StyledButton from "../components/StyledButton";
 import StyledText from "../components/StyledText";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase";
-import { useNavigation } from "@react-navigation/native";
 import { FirebaseError } from "firebase/app";
+import { MaterialIcons } from "@expo/vector-icons"; // Import for the eye icon
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 
 const firebaseErrors = {
     "auth/invalid-credential": "Email of wachtwoord is fout!",
@@ -32,10 +33,12 @@ const validationSchema = Yup.object().shape({
 
 const Login = () => {
     const passwordRef = useRef(null);
-    const navigation = useNavigation();
-
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
+
+    // Get the navigation instance
+    const navigation = useNavigation();
 
     const { handleChange, handleBlur, handleSubmit, errors, touched } = useFormik(
         {
@@ -44,12 +47,11 @@ const Login = () => {
                 password: "",
             },
             onSubmit: async ({ email, password }) => {
-                setLoading(true); 
-                setErrorMessage(""); 
+                setLoading(true);
+                setErrorMessage("");
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
-                    setLoading(false); 
-                    navigation.navigate("Home"); 
+                    setLoading(false);
                 } catch (error) {
                     setLoading(false); // Reset loading state
                     const firebaseError = error as FirebaseError;
@@ -86,27 +88,39 @@ const Login = () => {
                         onChangeText={handleChange("email")}
                         onBlur={handleBlur("email")}
                         style={{
-                            height: 50, // Increase height for better touch experience
-                            fontSize: 18, // Larger font size
-                            paddingHorizontal: 15, // Add horizontal padding for more space
+                            height: 50,
+                            fontSize: 18,
+                            paddingHorizontal: 15,
                         }}
                     />
-                    <TxtInput
-                        error={touched.password && !!errors.password}
-                        errorLabel={errors.password}
-                        ref={passwordRef}
-                        placeholder="Wachtwoord"
-                        secureTextEntry
-                        autoCapitalize="none"
-                        autoComplete="current-password"
-                        onChangeText={handleChange("password")}
-                        onBlur={handleBlur("password")}
-                        style={{
-                            height: 50, // Increase height for better touch experience
-                            fontSize: 18, // Larger font size
-                            paddingHorizontal: 15, // Add horizontal padding for more space
-                        }}
-                    />
+                    <View className="relative">
+                        <TxtInput
+                            error={touched.password && !!errors.password}
+                            errorLabel={errors.password}
+                            ref={passwordRef}
+                            placeholder="Wachtwoord"
+                            secureTextEntry={!passwordVisible} // Conditionally hide/show password
+                            autoCapitalize="none"
+                            autoComplete="current-password"
+                            onChangeText={handleChange("password")}
+                            onBlur={handleBlur("password")}
+                            style={{
+                                height: 50,
+                                fontSize: 18,
+                                paddingHorizontal: 15,
+                            }}
+                        />
+                        <TouchableOpacity
+                            onPress={() => setPasswordVisible(!passwordVisible)} // Toggle password visibility
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        >
+                            <MaterialIcons
+                                name={passwordVisible ? "visibility-off" : "visibility"}
+                                size={24}
+                                color="gray"
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </KeyboardAvoidingView>
 
                 {errorMessage ? (
@@ -115,11 +129,16 @@ const Login = () => {
                     </StyledText>
                 ) : null}
 
-                <TouchableOpacity className="mt-4">
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('register')} // Navigate to the register screen
+                    className="mt-4"
+                >
                     <StyledText className="text-sm text-right text-blue-600 underline">
                         Nog geen account?
                     </StyledText>
                 </TouchableOpacity>
+
+
 
                 <StyledButton
                     onPress={() => handleSubmit()}
