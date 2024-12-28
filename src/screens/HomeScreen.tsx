@@ -36,7 +36,7 @@ const HomeScreen: React.FC = () => {
             overview={item.overview}
             posterPath={item.poster_path}
             navigateToDetails={() =>
-              navigation.navigate("movie", { movie: item }) // Pass movie data
+              navigation.navigate("movie", { movie: item }) 
             }
           />
         )}
