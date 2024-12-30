@@ -1,17 +1,16 @@
 import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
+import { MaterialIcons } from "@expo/vector-icons";
 import { useGenres } from "../hooks/useMovies";
 
-// Define the props interface
 interface MovieComponentProps {
-  title: string | undefined; // Allow undefined to handle potential issues
+  title: string | undefined; 
   overview: string | undefined;
   poster_path: string | undefined;
   release_date: string; 
   genre_ids: number[];
   vote_average: number;
-  navigateToDetails: () => void; // Ensure this is included
+  navigateToDetails: () => void;
 }
 
 const MovieComponent: React.FC<MovieComponentProps> = ({
@@ -23,7 +22,7 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
   vote_average,
   navigateToDetails,
 }) => {
-  const { data, isLoading, isError, error } = useGenres();
+  const { data } = useGenres();
 
   const imageUrl = poster_path ? `https://image.tmdb.org/t/p/original${poster_path}` : "";
 
@@ -36,20 +35,19 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
       {poster_path ? (
         <Image source={{ uri: imageUrl }} style={styles.poster} />
       ) : (
-        <View style={[styles.poster, { backgroundColor: "#ccc" }]} /> // Placeholder if no image
+        <View style={[styles.poster, { backgroundColor: "#ccc" }]} /> 
       )}
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{title || "Untitled Movie"}</Text> {/* Fallback title */}
-        <Text style={styles.releaseYear}>{release_date || "xxxx"}</Text> {/* Show release year */}
+        <Text style={styles.title}>{title || "Untitled Movie"}</Text> 
+        <Text style={styles.releaseYear}>{release_date || "xxxx"}</Text> 
         <Text style={styles.genres}>{genreNames.join(", ") || "No genres available"}</Text>
-        <Text style={styles.overview}>{overview || "No description available."}</Text> {/* Fallback overview */}
+        <Text style={styles.overview}>{overview || "No description available."}</Text>
         
-        {/* Add the filled star icon next to the vote average */}
         <View style={styles.voteContainer}>
           <MaterialIcons 
-            name="star" // Filled star
+            name="star" 
             size={18} 
-            color="#FFD700" // Yellow color
+            color="#FFD700" 
             style={styles.starIcon} 
           />
           <Text>{vote_average ? vote_average.toFixed(1) : "No rating available"}</Text>
