@@ -1,4 +1,3 @@
-// REDUX Store gaan configureren
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import favoritesReducer from "../store/favorites/slice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
@@ -12,17 +11,14 @@ const persistConfig = {
     storage: AsyncStorage,
 }
 
-// Om meerdere reducers te kunnen gaan koppelen
 const rootReducer = combineReducers({
     favorites: favoritesReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// Store aangemaakt -> Magazijn aangemaakt
 export const store = configureStore({
     reducer: persistedReducer,
-    // React Native -> AsyncStorage voor actions te gaan negeren
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: {
             ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
