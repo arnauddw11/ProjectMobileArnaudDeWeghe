@@ -7,9 +7,18 @@ export type AuthStackParamsList = {
     register: undefined;
 }
 
+export type Movie = {
+    title: string;
+    overview: string;
+    poster_path: string;
+    release_date: string;
+    genre_ids: number[];
+    vote_average: number;
+};
+
 export type MovieStackParamsList = {
-    home: undefined;
-    movie: undefined;
+    HomeScreen: undefined;
+    MovieDetails:  {movie: Movie};
 }
 
 

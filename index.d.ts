@@ -3,5 +3,5 @@ interface Movie {
     overview: string;
     poster_path: string;
     release_date: string;
-    genres: { id: number; name: string }[];
+    genre_ids: number[];
 }  

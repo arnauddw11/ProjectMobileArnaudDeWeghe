@@ -1,29 +1,31 @@
 import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons"; // Import the Icon component
+import { MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
 import { useGenres } from "../hooks/useMovies";
 
+// Define the props interface
 interface MovieComponentProps {
-  title: string | undefined; 
+  title: string | undefined; // Allow undefined to handle potential issues
   overview: string | undefined;
-  posterPath: string | undefined;
-  releaseYear: string; 
+  poster_path: string | undefined;
+  release_date: string; 
   genre_ids: number[];
   vote_average: number;
-  navigateToDetails: () => void;
+  navigateToDetails: () => void; // Ensure this is included
 }
 
-const MovieComponent: React.FC<MovieComponentProps> = ({ 
-  title, 
-  overview, 
-  posterPath, 
-  releaseYear, 
-  genre_ids, 
-  vote_average, 
-  navigateToDetails 
+const MovieComponent: React.FC<MovieComponentProps> = ({
+  title,
+  overview,
+  poster_path,
+  release_date,
+  genre_ids,
+  vote_average,
+  navigateToDetails,
 }) => {
-  const { data, isLoading, isError } = useGenres();
-  const imageUrl = posterPath ? `https://image.tmdb.org/t/p/original${posterPath}` : "";
+  const { data, isLoading, isError, error } = useGenres();
+
+  const imageUrl = poster_path ? `https://image.tmdb.org/t/p/original${poster_path}` : "";
 
   const genreNames = genre_ids
     .map((id) => data?.genres.find((genre) => genre.id === id)?.name)
@@ -31,19 +33,26 @@ const MovieComponent: React.FC<MovieComponentProps> = ({
 
   return (
     <TouchableOpacity style={styles.container} onPress={navigateToDetails}>
-      {posterPath ? (
+      {poster_path ? (
         <Image source={{ uri: imageUrl }} style={styles.poster} />
       ) : (
-        <View style={[styles.poster, { backgroundColor: "#ccc" }]} />
+        <View style={[styles.poster, { backgroundColor: "#ccc" }]} /> // Placeholder if no image
       )}
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{title || "Untitled Movie"}</Text>
-        <Text style={styles.releaseYear}>{releaseYear || "xxxx"}</Text>
+        <Text style={styles.title}>{title || "Untitled Movie"}</Text> {/* Fallback title */}
+        <Text style={styles.releaseYear}>{release_date || "xxxx"}</Text> {/* Show release year */}
         <Text style={styles.genres}>{genreNames.join(", ") || "No genres available"}</Text>
-        <Text style={styles.overview}>{overview || "No description available."}</Text>
-        <View style={styles.ratingContainer}>
-          <Icon name="star" size={16} color="#FFD700" style={styles.starIcon} />
-          <Text style={styles.voteAverage}>{vote_average.toFixed(1)}</Text>
+        <Text style={styles.overview}>{overview || "No description available."}</Text> {/* Fallback overview */}
+        
+        {/* Add the filled star icon next to the vote average */}
+        <View style={styles.voteContainer}>
+          <MaterialIcons 
+            name="star" // Filled star
+            size={18} 
+            color="#FFD700" // Yellow color
+            style={styles.starIcon} 
+          />
+          <Text>{vote_average ? vote_average.toFixed(1) : "No rating available"}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -87,17 +96,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
   },
-  ratingContainer: {
+  voteContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 8,
   },
   starIcon: {
     marginRight: 4,
-  },
-  voteAverage: {
-    fontSize: 14,
-    color: "#555",
   },
 });
 

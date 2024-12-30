@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, FlatList, TextInput } from "react-native";
 import { useMovies, useGenres } from "../hooks/useMovies"; // Use both hooks
 import MovieComponent from "../components/MovieComponent";
 import { useNavigation } from "@react-navigation/native";
+import { Movie } from "../../movie-app.env"; // Import the Movie type
 
 const HomeScreen: React.FC = () => {
   const { data: movieData, isLoading, isError, error } = useMovies();
@@ -17,15 +18,6 @@ const HomeScreen: React.FC = () => {
       .filter(Boolean) as string[];
   };
 
-  // Function to handle vote range filtering
-  const isVoteInRange = (voteAverage: number, query: string) => {
-    const searchNum = parseFloat(query);
-    if (isNaN(searchNum) || searchNum < 0 || searchNum > 10) return false;
-    const lowerBound = Math.floor(searchNum); // Round down to the nearest integer (e.g., 8 => 8.0)
-    const upperBound = lowerBound + 0.9; // Set the upper bound (e.g., 8.0 to 8.9)
-    return voteAverage >= lowerBound && voteAverage <= upperBound;
-  };
-
   // Filter movies based on search query
   const filteredMovies = movieData?.results.filter((movie) => {
     const titleMatch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -33,7 +25,7 @@ const HomeScreen: React.FC = () => {
     const genreMatch = genreNames.some((genre) =>
       genre.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    const ratingMatch = isVoteInRange(movie.vote_average, searchQuery);
+    const ratingMatch = movie.vote_average.toString().includes(searchQuery);
 
     return titleMatch || genreMatch || ratingMatch;
   });
@@ -73,12 +65,21 @@ const HomeScreen: React.FC = () => {
           <MovieComponent
             title={item.title}
             overview={item.overview}
-            posterPath={item.poster_path}
-            releaseYear={item.release_date}
+            poster_path={item.poster_path}
+            release_date={item.release_date}
             genre_ids={item.genre_ids}
             vote_average={item.vote_average}
             navigateToDetails={() =>
-              navigation.navigate("movie", { movie: item })
+              navigation.navigate("MovieDetails", {
+                movie: {
+                  title: item.title,
+                  overview: item.overview,
+                  poster_path: item.poster_path,
+                  release_date: item.release_date,
+                  genre_ids: item.genre_ids,
+                  vote_average: item.vote_average,
+                },
+              })
             }
           />
         )}

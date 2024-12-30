@@ -10,8 +10,8 @@ const MovieStack = createStackNavigator<MovieStackParamsList>();
 const MovieStackNavigator = () => {
     return (
         <MovieStack.Navigator screenOptions={{ headerShown: false }}>
-            <MovieStack.Screen name="home" component={HomeScreen} />
-            <MovieStack.Screen name="movie" component={MovieDetails} />
+            <MovieStack.Screen name="HomeScreen" component={HomeScreen} />
+            <MovieStack.Screen name="MovieDetails" component={MovieDetails} />
         </MovieStack.Navigator>
     );
 };
