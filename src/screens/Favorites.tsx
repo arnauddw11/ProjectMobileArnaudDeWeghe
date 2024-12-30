@@ -13,7 +13,13 @@ const Favorites = () => {
     };
 
     return (
-        <View className="flex-1 bg-white p-4">
+        <View className="flex-1 bg-gray-50 p-4">
+            {/* Header Section */}
+            <View className="mb-6">
+                <Text className="text-3xl font-bold text-gray-800 text-center">Your Favorites</Text>
+            </View>
+
+            {/* Favorites List or Empty State */}
             {favorites.length > 0 ? (
                 <FlatList
                     data={favorites}
@@ -21,12 +27,17 @@ const Favorites = () => {
                     renderItem={({ item }) => (
                         <FavoriteItem movie={item} onRemove={handleRemoveFavorite} />
                     )}
-                    contentContainerStyle={{ paddingVertical: 8 }}
+                    contentContainerStyle={{ paddingBottom: 12 }}
                 />
             ) : (
-                <Text className="text-lg text-gray-500 text-center mt-5">
-                    No favorites added yet!
-                </Text>
+                <View className="flex-1 justify-center items-center">
+                    <Text className="text-lg text-gray-500 text-center mt-5">
+                        You haven't added any favorites yet!
+                    </Text>
+                    <Text className="text-sm text-gray-400 text-center mt-2">
+                        Browse and add your favorite movies to this list.
+                    </Text>
+                </View>
             )}
         </View>
     );

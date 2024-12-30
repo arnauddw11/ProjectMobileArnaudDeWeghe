@@ -1,98 +1,75 @@
 import React from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { Text, View, Image, TouchableOpacity, Alert } from "react-native";
 import { IconButton } from "react-native-paper";
 import { useAppDispatch, useAppSelector } from "../store";
 import { addFavorite, removeFavorite } from "../store/favorites/slice";
 import { MovieDetailScreenProps } from "../navigation/types";
+import { auth } from '../config/firebase';
 
 const MovieDetails = () => {
     const {
         params: { movie },
     } = useRoute<MovieDetailScreenProps<"MovieDetail">["route"]>();
 
-    const navigation =
-        useNavigation<MovieDetailScreenProps<"MovieDetail">["navigation"]>();
+    const navigation = useNavigation<MovieDetailScreenProps<"MovieDetail">["navigation"]>();
 
     const dispatch = useAppDispatch();
     const favoritesState = useAppSelector((state) => state.favorites);
 
-    // Check if the movie is already in the favorites list
     const isFavorite = favoritesState.some((favMovie) => favMovie.title === movie.title);
 
+    const user = auth.currentUser;
+
     const handleFavoritePress = () => {
+        if (!user) {
+            Alert.alert(
+                "Please log in",
+                "You need to be logged in to add favorites. Please log in to continue.",
+                [
+                    {
+                        text: "Log In",
+                    },
+                    { text: "Cancel", style: "cancel" },
+                ]
+            );
+            return;
+        }
+
         if (isFavorite) {
-            dispatch(removeFavorite(movie.title)); // Remove from favorites
+            dispatch(removeFavorite(movie.title)); 
             console.log(`Removed "${movie.title}" from favorites.`);
         } else {
-            dispatch(addFavorite(movie)); // Add to favorites
+            dispatch(addFavorite(movie));
             console.log(`Added "${movie.title}" to favorites.`);
         }
     };
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 p-4 items-center bg-white">
             <Image
-                style={styles.poster}
+                style={{ width: 192, height: 288, borderRadius: 8 }} // Direct style applied
                 source={{ uri: `https://image.tmdb.org/t/p/w500/${movie.poster_path}` }}
+                resizeMode="cover"
             />
-            <Text style={styles.title}>{movie.title}</Text>
-            <Text style={styles.overview}>{movie.overview}</Text>
+            <Text className="text-2xl font-bold text-center mb-4">{movie.title}</Text>
+            <Text className="text-base text-gray-600 text-justify mb-4">{movie.overview}</Text>
 
-            {/* Favorite Button */}
-            <TouchableOpacity style={styles.favoriteButton} onPress={handleFavoritePress}>
+            <TouchableOpacity 
+                className="flex-row items-center p-2 bg-gray-200 rounded-lg mt-4"
+                onPress={handleFavoritePress}
+            >
                 <IconButton
-                    icon={isFavorite ? "star" : "star-outline"} // Dynamic icon
+                    icon={isFavorite ? "star" : "star-outline"} 
                     size={24}
-                    background={isFavorite ? "#FFD700" : "#555"} // Highlighted color if favorite
+                    background={isFavorite ? "#FFD700" : "#555"} 
                 />
-                <Text style={styles.favoriteButtonText}>
+                <Text className="ml-2 text-lg font-bold text-gray-800">
                     {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
                 </Text>
             </TouchableOpacity>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        alignItems: "center",
-        backgroundColor: "#fff",
-    },
-    poster: {
-        width: 200,
-        height: 300,
-        borderRadius: 8,
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        textAlign: "center",
-        marginBottom: 16,
-    },
-    overview: {
-        fontSize: 16,
-        color: "#555",
-        textAlign: "justify",
-        marginBottom: 16,
-    },
-    favoriteButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        padding: 10,
-        backgroundColor: "#f0f0f0",
-        borderRadius: 8,
-        marginTop: 16,
-    },
-    favoriteButtonText: {
-        marginLeft: 8,
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#333",
-    },
-});
 
 export default MovieDetails;

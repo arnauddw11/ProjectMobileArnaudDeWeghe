@@ -6,7 +6,9 @@ type Movie = {
   title: string;
   overview: string;
   release_date: string;
-  poster_path: string; // Path for movie posters
+  genre_ids: number[];
+  poster_path: string; 
+  vote_average: number;
 };
 
 type MoviesResponse = {
@@ -15,7 +17,12 @@ type MoviesResponse = {
   total_results: number;
   total_pages: number;
 };
-
+type GenresResponse = {
+  genres: {
+    id: number;
+    name: string;
+  }[];
+};
 const fetchMovies = async (): Promise<MoviesResponse> => {
   const bearer = process.env.EXPO_PUBLIC_TMDB_BEARER_TOKEN as string; // Type assertion for the environment variable
 
@@ -39,10 +46,34 @@ const fetchMovies = async (): Promise<MoviesResponse> => {
   return response.data;
 };
 
+const fetchGenres = async (): Promise<GenresResponse> => {
+  const bearer = process.env.EXPO_PUBLIC_TMDB_BEARER_TOKEN as string; 
+
+  const options = {
+    method: "GET",
+    url: "https://api.themoviedb.org/3/genre/movie/list",
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${bearer}`,
+    },
+  };
+
+  const response = await axios.request<GenresResponse>(options);
+  return response.data;
+};
+
 export const useMovies = () => {
   return useQuery<MoviesResponse, Error>({
     queryKey: ["movies"],
     queryFn: fetchMovies,
+    refetchInterval: 5 * 60 * 1000, // Optional: Poll every 5 minutes
+  });
+};
+
+export const useGenres = () => {
+  return useQuery<GenresResponse, Error>({
+    queryKey: ["genres"],
+    queryFn: fetchGenres,
     refetchInterval: 5 * 60 * 1000, // Optional: Poll every 5 minutes
   });
 };

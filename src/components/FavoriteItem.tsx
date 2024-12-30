@@ -9,19 +9,22 @@ interface FavoriteItemProps {
 
 const FavoriteItem: React.FC<FavoriteItemProps> = ({ movie, onRemove }) => {
     return (
-        <View className="flex-row items-center mb-4 bg-gray-100 p-2 rounded-lg shadow">
+        <View className="flex-row items-center mb-4 bg-gray-100 p-4 rounded-lg shadow">
+            {/* Image */}
             <Image
-                className="w-16 h-24 rounded-md mr-3"
+                style={{ width: 120, height: 180, borderRadius: 8, marginRight: 16 }}  // Bigger image
                 source={{ uri: `https://image.tmdb.org/t/p/w500/${movie.poster_path}` }}
+                resizeMode="cover"
             />
-            <View className="flex-1 justify-center">
-                <Text className="text-lg font-bold text-gray-800 mb-1">{movie.title}</Text>
+            {/* Title and Remove Button */}
+            <View className="flex-1">
+                <Text className="text-xl font-bold text-gray-800 mb-2">{movie.title}</Text> {/* Larger title */}
                 <TouchableOpacity
                     onPress={() => onRemove(movie.title)}
-                    className="flex-row items-center mt-1"
+                    className="flex-row items-center"
                 >
-                    <IconButton icon="delete" size={20} background="#ff4444" />
-                    <Text className="text-sm font-medium text-red-500 ml-1">Remove</Text>
+                    <IconButton icon="delete" size={22} background="#ff4444" /> {/* Bigger icon */}
+                    <Text className="text-sm font-medium text-red-500 ml-2">Remove</Text> {/* Spacing for text */}
                 </TouchableOpacity>
             </View>
         </View>
