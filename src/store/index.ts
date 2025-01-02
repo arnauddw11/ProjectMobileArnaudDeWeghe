@@ -1,9 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import favoritesReducer from "../store/favorites/slice";
+import ticketsReducer from "../store/tickets/slice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from "redux-persist";
-
 
 const persistConfig = {
     key: "state",
@@ -13,6 +13,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     favorites: favoritesReducer,
+    tickets : ticketsReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -27,7 +28,6 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-
 
 type RootState = ReturnType<typeof store.getState>;
 type AppDispatch = typeof store.dispatch

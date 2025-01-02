@@ -3,7 +3,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { Text, View, Image, TouchableOpacity, Alert, StyleSheet, ScrollView, Modal, Button } from "react-native";
 import { IconButton } from "react-native-paper";
 import { useAppDispatch, useAppSelector } from "../store";
-import { addFavorite, removeFavorite } from "../store/favorites/slice";
+import { addFavorite, removeFavorite} from "../store/favorites/slice";
+import { addTicket, removeTicket } from "../store/tickets/slice";
 import { MovieDetailScreenProps } from "../navigation/types";
 import { auth } from "../config/firebase";
 import { useGenres } from "../hooks/useMovies";
@@ -31,10 +32,16 @@ const MovieDetails = () => {
 
     const dispatch = useAppDispatch();
     const favoritesState = useAppSelector((state) => state.favorites);
+    const ticketState = useAppSelector((state) => state.tickets);
+
 
     const isFavorite = favoritesState.some((favMovie) => favMovie.title === movie.title);
     const user = auth.currentUser;
 
+    const isInCart = ticketState.some((savedToCart) =>
+    savedToCart.movie.title === movie.title && savedToCart.cinema.naam === selectedCinema?.naam
+);
+    
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedCinema, setSelectedCinema] = useState<Cinema | null>(null);
 
@@ -78,7 +85,8 @@ const MovieDetails = () => {
     const handleCinemaSelect = (cinema: Cinema) => {
         setSelectedCinema(cinema);
         setModalVisible(false);
-        handleConfirmAddToCart();
+        dispatch(addTicket({ movie, cinema }));
+        //handleConfirmAddToCart();
     };
 
     useEffect(() => {
@@ -159,13 +167,10 @@ const MovieDetails = () => {
                 <Text style={styles.title}>{movie.title}</Text>
                 <Text style={styles.overview}>{movie.overview}</Text>
 
-                {/* Release Date */}
-                <Text style={styles.details}>Release Date: {releaseDate}</Text>
+-                <Text style={styles.details}>Release Date: {releaseDate}</Text>
 
-                {/* Rating */}
                 <Text style={styles.details}>Rating: {movie.vote_average}/10</Text>
 
-                {/* Genres */}
                 <Text style={styles.details}>Genres: {genres.join(", ")}</Text>
 
                 <TouchableOpacity
@@ -203,7 +208,7 @@ const MovieDetails = () => {
                             <Text style={styles.modalTitle}>Select a Cinema</Text>
                             {biosGentData.map((cinema) => (
                                 <TouchableOpacity
-                                    key={cinema.id}
+                                    key={cinema.naam}
                                     style={styles.modalOption}
                                     onPress={() => handleCinemaSelect(cinema)}
                                 >
