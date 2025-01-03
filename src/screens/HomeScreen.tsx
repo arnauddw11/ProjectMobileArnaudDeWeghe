@@ -72,6 +72,7 @@ const HomeScreen: React.FC = () => {
             navigateToDetails={() =>
               navigation.navigate("MovieDetails", {
                 movie: {
+                  id : item.id,
                   title: item.title,
                   overview: item.overview,
                   poster_path: item.poster_path,

@@ -12,6 +12,8 @@ import { doc, updateDoc, arrayUnion, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import biosGentData from '../json/bios_gent.json';
 import { useState, useEffect } from "react";
+import { useVideos } from "../hooks/useVideos";
+import { WebView } from "react-native-webview";
 
 interface Cinema {
     naam: string;
@@ -27,7 +29,8 @@ const MovieDetails = () => {
         params: { movie },
     } = useRoute<MovieDetailScreenProps<"MovieDetails">["route"]>();
     const { data: genreData } = useGenres();
-
+    const { data: videoData, isLoading: videoLoading, error: videoError } = useVideos(movie.id);
+    console.log(movie)
     const navigation = useNavigation<MovieDetailScreenProps<"MovieDetails">["navigation"]>();
 
     const dispatch = useAppDispatch();
@@ -86,65 +89,7 @@ const MovieDetails = () => {
         setSelectedCinema(cinema);
         setModalVisible(false);
         dispatch(addTicket({ movie, cinema }));
-        //handleConfirmAddToCart();
     };
-
-    useEffect(() => {
-        if (selectedCinema) {
-            handleConfirmAddToCart();
-        }
-    }, [selectedCinema]);
-
-    const handleConfirmAddToCart = async () => {
-        if (!user) {
-            Alert.alert(
-                "Please log in",
-                "You need to be logged in to add items to your cart. Please log in to continue.",
-                [
-                    { text: "Log In" }, 
-                    { text: "Cancel", style: "cancel" },
-                ]
-            );
-            return;
-        }
-    
-        if (!selectedCinema) {
-            Alert.alert("Error", "Please select a cinema.");
-            return;
-        }
-    
-        try {
-            const userDocRef = doc(db, "users", user.uid);
-            const docSnapshot = await getDoc(userDocRef);
-    
-            const cartItem = {
-                title: movie.title,
-                overview: movie.overview,
-                poster_path: movie.poster_path,
-                release_date: movie.release_date,
-                genre_ids: movie.genre_ids,
-                vote_average: movie.vote_average,
-                cinema: selectedCinema,  
-            };
-    
-            if (docSnapshot.exists()) {
-                await updateDoc(userDocRef, {
-                    cartItems: arrayUnion(cartItem),
-                });
-            } else {
-                await setDoc(userDocRef, {
-                    cartItems: [cartItem],
-                });
-            }
-    
-            Alert.alert("Added to Cart", `"${movie.title}" has been added to your shopping cart.`);
-        } catch (error) {
-            console.error("Error adding to cart: ", error);
-            Alert.alert("Error", "There was an issue adding the movie to your cart.");
-        }
-    };
-    
-
 
     const releaseDate = new Date(movie.release_date).toLocaleDateString();
 
@@ -155,6 +100,7 @@ const MovieDetails = () => {
     };
 
     const genres = getGenreNames(movie.genre_ids);
+    const firstVideoKey = videoData?.results?.[0]?.key;
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -167,7 +113,7 @@ const MovieDetails = () => {
                 <Text style={styles.title}>{movie.title}</Text>
                 <Text style={styles.overview}>{movie.overview}</Text>
 
--                <Text style={styles.details}>Release Date: {releaseDate}</Text>
+                <Text style={styles.details}>Release Date: {releaseDate}</Text>
 
                 <Text style={styles.details}>Rating: {movie.vote_average}/10</Text>
 
@@ -197,6 +143,17 @@ const MovieDetails = () => {
                     <Text style={styles.favoriteText}>{"Add to Shopping Cart"}</Text>
                 </TouchableOpacity>
 
+                {firstVideoKey && (
+                    <View style={styles.webviewContainer}>
+                        <Text style={styles.webviewTitle}>Watch Trailer</Text>
+                        <WebView
+                            source={{ uri: `https://www.youtube.com/watch?v=${firstVideoKey}` }}
+                            style={styles.webview}
+                            allowsFullscreenVideo={true}
+                        />
+                    </View>
+                )}
+
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -225,6 +182,23 @@ const MovieDetails = () => {
 };
 
 const styles = StyleSheet.create({
+    webviewContainer: {
+        marginTop: 16,
+        width: "100%",
+        height: 200,
+        backgroundColor: "#000",
+    },
+    webviewTitle: {
+        color: "#fff",
+        textAlign: "center",
+        marginBottom: 8,
+        fontSize: 18,
+    },
+    webview: {
+        flex: 1,
+        width: "100%",
+    },
+
     scrollContainer: {
         flexGrow: 1,
         paddingBottom: 16,

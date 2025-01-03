@@ -3,8 +3,10 @@ import { useAppSelector } from "../store";
 import { db } from "../config/firebase";
 import { collection, updateDoc, arrayUnion, doc } from "firebase/firestore";
 import { auth } from "../config/firebase";
-
+import { clearTickets } from '../store/tickets/slice';
+import { useAppDispatch } from '../store';
 interface Movie {
+    id: number;
     title: string;
     overview: string;
     poster_path: string;
@@ -28,7 +30,8 @@ interface Ticket {
 
 const ShoppingCart = () => {
     const user = auth.currentUser;
-    const cartItems = useAppSelector((state) => state.tickets); // Use correct state, 'tickets' in this case
+    const cartItems = useAppSelector((state) => state.tickets); 
+    const dispatch = useAppDispatch();
 
     const handleBuyAll = async () => {
         if (!user) {
@@ -39,8 +42,10 @@ const ShoppingCart = () => {
         try {
             const userDocRef = doc(db, "users", user.uid);
             await updateDoc(userDocRef, {
-                cartItems: arrayUnion(...cartItems), // Send all items in the cart to Firestore
+                cartItems: arrayUnion(...cartItems), 
             });
+
+            dispatch(clearTickets());
 
             Alert.alert("Purchase successful", "All items have been bought.");
         } catch (error) {
@@ -55,7 +60,6 @@ const ShoppingCart = () => {
             <Text style={styles.cartItemText}>Selected Cinema: {item.cinema.naam}</Text>
         </View>
     );
-    
 
     return (
         <View style={styles.container}>
@@ -74,6 +78,7 @@ const ShoppingCart = () => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

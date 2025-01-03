@@ -9,8 +9,10 @@ import AccountScreen from "../screens/Account";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { createStackNavigator } from "@react-navigation/stack";
-import AuthNavigator from "../navigation/AuthStackNavigator"; 
+import AuthNavigator from "../navigation/AuthStackNavigator";
 import MovieStackNavigator from "./MovieStackNavigator";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import PurchasedTickets from "../screens/PurchasedTickets";
 
 const Tab = createBottomTabNavigator();
 
@@ -45,6 +47,14 @@ const BottomTabNavigator = () => {
                 }}
             />
             <Tab.Screen
+                name="Tickets"
+                component={PurchasedTickets}
+                options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <MaterialCommunityIcons name="ticket" size={40} color="black" />),
+                }}
+            />
+            <Tab.Screen
                 name="Favorites"
                 component={Favorites}
                 options={{
@@ -64,7 +74,7 @@ const BottomTabNavigator = () => {
             />
             <Tab.Screen
                 name="Account"
-                component={user ? AccountScreen : AuthNavigator} 
+                component={user ? AccountScreen : AuthNavigator}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <MaterialIcons name="account-circle" size={40} color="black" />

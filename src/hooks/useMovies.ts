@@ -9,6 +9,7 @@ type Movie = {
   genre_ids: number[];
   poster_path: string; 
   vote_average: number;
+  video: string;
 };
 
 type MoviesResponse = {
@@ -24,14 +25,14 @@ type GenresResponse = {
   }[];
 };
 const fetchMovies = async (): Promise<MoviesResponse> => {
-  const bearer = process.env.EXPO_PUBLIC_TMDB_BEARER_TOKEN as string; // Type assertion for the environment variable
+  const bearer = process.env.EXPO_PUBLIC_TMDB_BEARER_TOKEN as string;
 
   const options = {
     method: "GET",
     url: "https://api.themoviedb.org/3/discover/movie",
     params: {
       include_adult: "false",
-      include_video: "false",
+      include_video: "true",
       language: "en-US",
       page: "1",
       sort_by: "popularity.desc",
@@ -66,7 +67,7 @@ export const useMovies = () => {
   return useQuery<MoviesResponse, Error>({
     queryKey: ["movies"],
     queryFn: fetchMovies,
-    refetchInterval: 5 * 60 * 1000, // Optional: Poll every 5 minutes
+    refetchInterval: 5 * 60 * 1000,
   });
 };
 
@@ -74,6 +75,6 @@ export const useGenres = () => {
   return useQuery<GenresResponse, Error>({
     queryKey: ["genres"],
     queryFn: fetchGenres,
-    refetchInterval: 5 * 60 * 1000, // Optional: Poll every 5 minutes
+    refetchInterval: 5 * 60 * 1000, 
   });
 };
