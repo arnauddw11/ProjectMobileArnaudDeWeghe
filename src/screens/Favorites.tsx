@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Text, View, FlatList } from "react-native";
+import { Text, View, FlatList, StyleSheet } from "react-native";
 import { useAppSelector, useAppDispatch } from "../store";
 import { removeFavorite, clearFavorites } from "../store/favorites/slice";
 import FavoriteItem from "../components/FavoriteItem"; 
@@ -26,11 +26,10 @@ const Favorites = () => {
     };
 
     return (
-        <View className="flex-1 bg-gray-50 p-4">
-            <View className="mb-6">
-                <Text className="text-3xl font-bold text-gray-800 text-center">Your Favorites</Text>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.headerText}>Your Favorites</Text>
             </View>
-
             {favorites.length > 0 ? (
                 <FlatList
                     data={favorites}
@@ -38,24 +37,46 @@ const Favorites = () => {
                     renderItem={({ item }) => (
                         <FavoriteItem movie={item} onRemove={handleRemoveFavorite} />
                     )}
-                    contentContainerStyle={{ paddingBottom: 12 }}
+                    contentContainerStyle={styles.flatListContent}
                 />
             ) : (
-                <View className="flex-1 justify-center items-center">
-                    <Text className="text-lg text-gray-500 text-center mt-5">
-                        {user
-                            ? "You haven't added any favorites yet!"
-                            : "Please log in to see your favorites."}
-                    </Text>
-                    {!user && (
-                        <Text className="text-sm text-gray-400 text-center mt-2">
-                            Log in to browse and add your favorite movies.
-                        </Text>
-                    )}
+                <View style={styles.emptyContainer}>
+                    {user ? (
+                        <Text>You haven't added any favorites yet!</Text>
+                    ) : (
+                        <Text>Please log in to see your favorites.</Text>
+                    )
+                    }
                 </View>
             )}
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "#F9FAFB", 
+        padding: 16,
+    },
+    header: {
+        marginBottom: 24,
+        alignItems: "center",
+    },
+    headerText: {
+        fontSize: 32,
+        fontWeight: "bold",
+        color: "#4B5563", 
+        textAlign: "center",
+    },
+    flatListContent: {
+        paddingBottom: 12,
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+});
 
 export default Favorites;

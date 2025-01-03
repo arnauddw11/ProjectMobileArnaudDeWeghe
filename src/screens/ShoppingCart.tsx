@@ -5,6 +5,7 @@ import { collection, updateDoc, arrayUnion, doc } from "firebase/firestore";
 import { auth } from "../config/firebase";
 import { clearTickets } from '../store/tickets/slice';
 import { useAppDispatch } from '../store';
+
 interface Movie {
     id: number;
     title: string;
@@ -33,6 +34,17 @@ const ShoppingCart = () => {
     const cartItems = useAppSelector((state) => state.tickets); 
     const dispatch = useAppDispatch();
 
+    // Group items by movie and cinema and count duplicates
+    const groupedCartItems = cartItems.reduce((acc, item) => {
+        const key = `${item.movie.id}-${item.cinema.naam}`;  // Unique key based on movie and cinema
+        if (acc[key]) {
+            acc[key].count += 1;
+        } else {
+            acc[key] = { item, count: 1 };
+        }
+        return acc;
+    }, {} as Record<string, { item: Ticket, count: number }>);
+
     const handleBuyAll = async () => {
         if (!user) {
             Alert.alert("Please log in", "You need to be logged in to proceed with the purchase.");
@@ -54,31 +66,35 @@ const ShoppingCart = () => {
         }
     };
 
-    const renderCartItem = ({ item }: { item: Ticket }) => (
+    const renderCartItem = ({ item }: { item: { item: Ticket, count: number } }) => (
         <View style={styles.cartItem}>
-            <Text style={styles.cartItemText}>Movie: {item.movie.title}</Text>
-            <Text style={styles.cartItemText}>Selected Cinema: {item.cinema.naam}</Text>
+            <Text style={styles.cartItemText}>Movie: {item.item.movie.title}</Text>
+            <Text style={styles.cartItemText}>Selected Cinema: {item.item.cinema.naam}</Text>
+            {item.count > 1 && (
+                <Text style={styles.cartItemText}>Quantity: {item.count}</Text>
+            )}
         </View>
     );
 
+    const groupedItemsArray = Object.values(groupedCartItems);
+
     return (
         <View style={styles.container}>
-            {cartItems.length === 0 ? (
+            {groupedItemsArray.length === 0 ? (
                 <Text>No Items in Cart</Text>
             ) : (
                 <FlatList
-                    data={cartItems}
+                    data={groupedItemsArray}
                     renderItem={renderCartItem}
                     keyExtractor={(item, index) => index.toString()}
                 />
             )}
-            {cartItems.length > 0 && (
+            {groupedItemsArray.length > 0 && (
                 <Button title="Buy All" onPress={handleBuyAll} />
             )}
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {

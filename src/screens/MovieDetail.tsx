@@ -3,13 +3,13 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { Text, View, Image, TouchableOpacity, Alert, StyleSheet, ScrollView, Modal, Button } from "react-native";
 import { IconButton } from "react-native-paper";
 import { useAppDispatch, useAppSelector } from "../store";
-import { addFavorite, removeFavorite} from "../store/favorites/slice";
+import { addFavorite, removeFavorite } from "../store/favorites/slice";
 import { addTicket } from "../store/tickets/slice";
 import { MovieDetailScreenProps } from "../navigation/types";
 import { auth } from "../config/firebase";
 import { useGenres } from "../hooks/useMovies";
 import biosGentData from '../json/bios_gent.json';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useVideos } from "../hooks/useVideos";
 import { WebView } from "react-native-webview";
 
@@ -28,22 +28,21 @@ const MovieDetails = () => {
     } = useRoute<MovieDetailScreenProps<"MovieDetails">["route"]>();
     const { data: genreData } = useGenres();
     const { data: videoData, isLoading: videoLoading, error: videoError } = useVideos(movie.id);
-    console.log(movie)
     const navigation = useNavigation<MovieDetailScreenProps<"MovieDetails">["navigation"]>();
 
     const dispatch = useAppDispatch();
     const favoritesState = useAppSelector((state) => state.favorites);
     const ticketState = useAppSelector((state) => state.tickets);
 
-
     const isFavorite = favoritesState.some((favMovie) => favMovie.title === movie.title);
     const user = auth.currentUser;
 
     const isInCart = ticketState.some((savedToCart) =>
-    savedToCart.movie.title === movie.title && savedToCart.cinema.naam === selectedCinema?.naam
-);
+        savedToCart.movie.title === movie.title && savedToCart.cinema.naam === selectedCinema?.naam
+    );
     
     const [modalVisible, setModalVisible] = useState(false);
+    const [webviewVisible, setWebviewVisible] = useState(false);  
     const [selectedCinema, setSelectedCinema] = useState<Cinema | null>(null);
 
     const handleFavoritePress = () => {
@@ -67,6 +66,7 @@ const MovieDetails = () => {
             dispatch(addFavorite(movie));
         }
     };
+
     const handleAddToCart = () => {
         if (!user) {
             Alert.alert(
@@ -98,7 +98,23 @@ const MovieDetails = () => {
     };
 
     const genres = getGenreNames(movie.genre_ids);
-    const firstVideoKey = videoData?.results?.[0]?.key;
+    
+    const filteredVideos = videoData?.results.filter(
+        (video) =>
+            video.type === "Trailer" &&
+            video.official === true &&
+            video.iso_639_1 === "en" &&
+            video.iso_3166_1 === "US"
+    );
+
+    const firstVideoKey = filteredVideos?.[0]?.key;
+    const handleWatchTrailer = () => {
+        setWebviewVisible(true);
+    };
+
+    const handleCloseWebview = () => {
+        setWebviewVisible(false);
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -118,38 +134,34 @@ const MovieDetails = () => {
                 <Text style={styles.details}>Genres: {genres.join(", ")}</Text>
 
                 <TouchableOpacity
-                    style={styles.favoriteButton}
+                    style={styles.button}
                     onPress={handleFavoritePress}
                 >
                     <IconButton
                         icon={isFavorite ? "star" : "star-outline"}
                         size={24}
-                        style={{ backgroundColor: isFavorite ? "#FFD700" : "#555" }}
+                        style={[styles.iconButton, { backgroundColor: isFavorite ? "#FFD700" : "#555" }]}
                     />
-                    <Text style={styles.favoriteText}>
+                    <Text style={styles.buttonText}>
                         {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                    style={styles.button}
                     onPress={handleAddToCart}
                 >
                     <IconButton
                         icon={"cart-plus"}
                         size={24}
-                        style={{ backgroundColor: "#555" }}
+                        style={styles.iconButton}
                     />
-                    <Text style={styles.favoriteText}>{"Add to Shopping Cart"}</Text>
+                    <Text style={styles.buttonText}>{"Add to Shopping Cart"}</Text>
                 </TouchableOpacity>
 
                 {firstVideoKey && (
-                    <View style={styles.webviewContainer}>
-                        <Text style={styles.webviewTitle}>Watch Trailer</Text>
-                        <WebView
-                            source={{ uri: `https://www.youtube.com/watch?v=${firstVideoKey}` }}
-                            style={styles.webview}
-                            allowsFullscreenVideo={true}
-                        />
-                    </View>
+                    <TouchableOpacity style={styles.watchTrailerButton} onPress={handleWatchTrailer}>
+                        <Text style={styles.watchTrailerText}>Watch Trailer</Text>
+                    </TouchableOpacity>
                 )}
 
                 <Modal
@@ -159,7 +171,7 @@ const MovieDetails = () => {
                     onRequestClose={() => setModalVisible(false)}
                 >
                     <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
+                        <View style={styles.webviewModalContent}>
                             <Text style={styles.modalTitle}>Select a Cinema</Text>
                             {biosGentData.map((cinema) => (
                                 <TouchableOpacity
@@ -171,6 +183,26 @@ const MovieDetails = () => {
                                 </TouchableOpacity>
                             ))}
                             <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                        </View>
+                    </View>
+                </Modal>
+
+                {/* Webview Modal for Trailer */}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={webviewVisible}
+                    onRequestClose={handleCloseWebview}
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.webviewModalContent}>
+                            <Text style={styles.webviewTitle}>Watch Trailer</Text>
+                            <WebView
+                                source={{ uri: `https://www.youtube.com/watch?v=${firstVideoKey}` }}
+                                style={styles.webview}
+                                allowsFullscreenVideo={true}
+                            />
+                            <Button title="Close" onPress={handleCloseWebview} />
                         </View>
                     </View>
                 </Modal>
@@ -230,7 +262,7 @@ const styles = StyleSheet.create({
         color: "#333",
         marginBottom: 8,
     },
-    favoriteButton: {
+    button: {
         flexDirection: "row",
         alignItems: "center",
         paddingVertical: 12,
@@ -239,11 +271,27 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginTop: 16,
     },
-    favoriteText: {
+    iconButton: {
+        backgroundColor: "#555",
+    },
+    buttonText: {
         marginLeft: 8,
         fontSize: 16,
         fontWeight: "bold",
         color: "#333",
+    },
+    watchTrailerButton: {
+        marginTop: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        backgroundColor: "#555",
+        borderRadius: 8,
+    },
+    watchTrailerText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#fff",
+        textAlign: "center",
     },
     modalContainer: {
         flex: 1,
@@ -251,7 +299,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "rgba(0,0,0,0.5)",
     },
-    modalContent: {
+    webviewModalContent: {
         width: 300,
         padding: 20,
         backgroundColor: "white",

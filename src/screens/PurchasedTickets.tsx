@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, FlatList, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import { auth, db } from "../config/firebase";
 import { getDoc, doc } from "firebase/firestore";
 
@@ -28,34 +28,41 @@ interface Ticket {
 const PurchasedTickets = () => {
     const [purchasedTickets, setPurchasedTickets] = useState<Ticket[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [refreshing, setRefreshing] = useState<boolean>(false); // For pull-to-refresh
+
+    const fetchPurchasedTickets = async () => {
+        const user = auth.currentUser;
+        if (!user) {
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                setPurchasedTickets(data.cartItems || []);
+            } else {
+                console.log("No such document!");
+            }
+        } catch (error) {
+            console.error("Error fetching purchased tickets: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPurchasedTickets = async () => {
-            const user = auth.currentUser;
-            if (!user) {
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
-
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    setPurchasedTickets(data.cartItems || []);
-                } else {
-                    console.log("No such document!");
-                }
-            } catch (error) {
-                console.error("Error fetching purchased tickets: ", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchPurchasedTickets();
-    }, []);
+    }, []); // Only run once on mount
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchPurchasedTickets(); // Refetch data
+        setRefreshing(false);
+    };
 
     const renderTicketItem = ({ item }: { item: Ticket }) => (
         <View style={styles.ticketItem}>
@@ -83,6 +90,13 @@ const PurchasedTickets = () => {
                     data={purchasedTickets}
                     renderItem={renderTicketItem}
                     keyExtractor={(item, index) => index.toString()}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh} // Trigger refetch
+                            colors={["#0000ff"]}
+                        />
+                    }
                 />
             )}
         </View>
