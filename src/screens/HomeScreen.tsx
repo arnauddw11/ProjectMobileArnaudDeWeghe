@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, FlatList, TextInput } from "react-native";
-import { useMovies, useGenres } from "../hooks/useMovies"; // Use both hooks
+import { useMovies, useGenres } from "../hooks/useMovies"; 
 import MovieComponent from "../components/MovieComponent";
 import { useNavigation } from "@react-navigation/native";
-import { Movie } from "../../movie-app.env"; // Import the Movie type
 
 const HomeScreen: React.FC = () => {
   const { data: movieData, isLoading, isError, error } = useMovies();
@@ -11,14 +10,12 @@ const HomeScreen: React.FC = () => {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Helper function to get genre names from genre IDs
   const getGenreNames = (genreIds: number[]) => {
     return genreIds
       .map((id) => genreData?.genres.find((genre) => genre.id === id)?.name)
       .filter(Boolean) as string[];
   };
 
-  // Filter movies based on search query
   const filteredMovies = movieData?.results.filter((movie) => {
     const titleMatch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
     const genreNames = getGenreNames(movie.genre_ids);

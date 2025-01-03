@@ -1,6 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-
 import { MovieStackParamsList } from "../../movie-app.env";
 import HomeScreen from "../screens/HomeScreen";
 import MovieDetails from "../screens/MovieDetail";

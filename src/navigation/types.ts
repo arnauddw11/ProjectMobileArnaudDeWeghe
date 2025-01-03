@@ -1,9 +1,5 @@
 
-// Importeren van uw NavigatorProps -> StackNavigator/TabNavigator/DrawerNavigator
-
 import { StackScreenProps } from "@react-navigation/stack";
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { DrawerScreenProps } from "@react-navigation/drawer"; 
 
 export type MovieStackParamsList = {
     HomeScreen: undefined

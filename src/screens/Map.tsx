@@ -3,7 +3,6 @@ import { StyleSheet, View, Alert } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
-// Import your JSON data
 import biosGentData from '../json/bios_gent.json';
 
 const Map = () => {
@@ -43,7 +42,6 @@ return (
             longitudeDelta: 0.0421,
         }}
         >
-          {/* Render markers from biosGentData */}
         {biosGentData.map((item, index) => (
             <Marker
             key={index}
@@ -58,7 +56,6 @@ return (
         </MapView>
     ) : (
         <View style={styles.loadingContainer}>
-          {/* Optionally, show a loading spinner or other UI */}
         </View>
     )}
     </View>
@@ -67,10 +64,10 @@ return (
 
 const styles = StyleSheet.create({
 container: {
-    flex: 1, // Make sure the container takes up the full screen
+    flex: 1, 
 },
 map: {
-    width: "100%", // MapView should stretch to fill the container
+    width: "100%", 
     height: "100%",
 },
 loadingContainer: {

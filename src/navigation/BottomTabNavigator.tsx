@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialIcons } from "@expo/vector-icons";
-import HomeScreen from "../screens/HomeScreen";
 import ShoppingCart from "../screens/ShoppingCart";
 import Favorites from "../screens/Favorites";
 import Map from "../screens/Map";
 import AccountScreen from "../screens/Account";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../config/firebase";
-import { createStackNavigator } from "@react-navigation/stack";
 import AuthNavigator from "../navigation/AuthStackNavigator";
 import MovieStackNavigator from "./MovieStackNavigator";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';

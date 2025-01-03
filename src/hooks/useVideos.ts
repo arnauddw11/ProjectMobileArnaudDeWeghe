@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-// Type for video response
 type Video = {
     iso_639_1: string;
     iso_3166_1: string;

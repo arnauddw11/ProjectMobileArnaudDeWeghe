@@ -4,12 +4,10 @@ import { Text, View, Image, TouchableOpacity, Alert, StyleSheet, ScrollView, Mod
 import { IconButton } from "react-native-paper";
 import { useAppDispatch, useAppSelector } from "../store";
 import { addFavorite, removeFavorite} from "../store/favorites/slice";
-import { addTicket, removeTicket } from "../store/tickets/slice";
+import { addTicket } from "../store/tickets/slice";
 import { MovieDetailScreenProps } from "../navigation/types";
 import { auth } from "../config/firebase";
 import { useGenres } from "../hooks/useMovies";
-import { doc, updateDoc, arrayUnion, setDoc, getDoc } from "firebase/firestore";
-import { db } from "../config/firebase";
 import biosGentData from '../json/bios_gent.json';
 import { useState, useEffect } from "react";
 import { useVideos } from "../hooks/useVideos";

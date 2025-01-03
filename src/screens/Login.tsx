@@ -1,5 +1,4 @@
 import {
-    Alert,
     KeyboardAvoidingView,
     Platform,
     TouchableOpacity,
@@ -14,8 +13,8 @@ import StyledText from "../components/StyledText";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { FirebaseError } from "firebase/app";
-import { MaterialIcons } from "@expo/vector-icons"; // Import for the eye icon
-import { useNavigation } from "@react-navigation/native"; // Import useNavigation
+import { MaterialIcons } from "@expo/vector-icons"; 
+import { useNavigation } from "@react-navigation/native"; 
 
 const firebaseErrors = {
     "auth/invalid-credential": "Email of wachtwoord is fout!",
@@ -35,9 +34,8 @@ const Login = () => {
     const passwordRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
+    const [passwordVisible, setPasswordVisible] = useState(false); 
 
-    // Get the navigation instance
     const navigation = useNavigation();
 
     const { handleChange, handleBlur, handleSubmit, errors, touched } = useFormik(
@@ -53,12 +51,12 @@ const Login = () => {
                     await signInWithEmailAndPassword(auth, email, password);
                     setLoading(false);
                 } catch (error) {
-                    setLoading(false); // Reset loading state
+                    setLoading(false);
                     const firebaseError = error as FirebaseError;
                     const errorMessage =
                         firebaseErrors[firebaseError.code as keyof typeof firebaseErrors] ||
                         "Er is iets fout gegaan!";
-                    setErrorMessage(errorMessage); // Show error message if login fails
+                    setErrorMessage(errorMessage); 
                 }
             },
             validationSchema: validationSchema,
