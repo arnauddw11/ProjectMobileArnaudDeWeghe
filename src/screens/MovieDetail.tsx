@@ -153,7 +153,7 @@ const MovieDetails = () => {
                     <IconButton
                         icon={"cart-plus"}
                         size={24}
-                        style={styles.iconButton}
+                        style={styles.cartIconButton}
                     />
                     <Text style={styles.buttonText}>{"Add to Shopping Cart"}</Text>
                 </TouchableOpacity>
@@ -187,7 +187,6 @@ const MovieDetails = () => {
                     </View>
                 </Modal>
 
-                {/* Webview Modal for Trailer */}
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -273,6 +272,9 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         backgroundColor: "#555",
+    },
+    cartIconButton: {
+        backgroundColor:"#1E90FF",
     },
     buttonText: {
         marginLeft: 8,

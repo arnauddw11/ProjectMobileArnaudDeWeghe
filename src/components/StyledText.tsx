@@ -9,8 +9,8 @@ const StyledText = (props: StyledTextProps) => {
             {...props}
             style={[
                 { fontFamily: "Montserrat" },
-                props.style, // Allow parent to override style if needed
-                { textAlign: "center", fontSize: 16, fontWeight: "bold" } // Default button text style
+                props.style,
+                { textAlign: "center", fontSize: 16, fontWeight: "bold" } 
             ]}
         >
             {props.children}

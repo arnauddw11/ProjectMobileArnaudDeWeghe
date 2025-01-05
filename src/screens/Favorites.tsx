@@ -5,11 +5,13 @@ import { removeFavorite, clearFavorites } from "../store/favorites/slice";
 import FavoriteItem from "../components/FavoriteItem"; 
 import { auth } from "../config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useState } from "react";
 
 const Favorites = () => {
     const dispatch = useAppDispatch();
     const favorites = useAppSelector((state) => state.favorites);
     const user = auth.currentUser;
+    const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
