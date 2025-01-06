@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Button, FlatList, Alert } from 'react-native';
 import { useAppSelector } from "../store";
 import { db } from "../config/firebase";
-import { collection, updateDoc, arrayUnion, doc } from "firebase/firestore";
+import { updateDoc, arrayUnion, doc, getDoc, setDoc } from "firebase/firestore";
 import { auth } from "../config/firebase";
 import { clearTickets } from '../store/tickets/slice';
 import { useAppDispatch } from '../store';
@@ -34,9 +34,8 @@ const ShoppingCart = () => {
     const cartItems = useAppSelector((state) => state.tickets); 
     const dispatch = useAppDispatch();
 
-    // Group items by movie and cinema and count duplicates
     const groupedCartItems = cartItems.reduce((acc, item) => {
-        const key = `${item.movie.id}-${item.cinema.naam}`;  // Unique key based on movie and cinema
+        const key = `${item.movie.id}-${item.cinema.naam}`; 
         if (acc[key]) {
             acc[key].count += 1;
         } else {
@@ -50,19 +49,30 @@ const ShoppingCart = () => {
             Alert.alert("Please log in", "You need to be logged in to proceed with the purchase.");
             return;
         }
-
+    
         try {
             const userDocRef = doc(db, "users", user.uid);
+    
+            const docSnapshot = await getDoc(userDocRef);
+            if (!docSnapshot.exists()) {
+                await setDoc(userDocRef, { cartItems: [] });
+            }
+    
+            const userSpecificCartItems = cartItems.map((item) => ({
+                ...item,
+                userId: user.uid,
+                addedAt: Date.now(),
+            }));
+    
             await updateDoc(userDocRef, {
-                cartItems: arrayUnion(...cartItems), 
+                cartItems: arrayUnion(...userSpecificCartItems),
             });
-
+    
             dispatch(clearTickets());
-
             Alert.alert("Purchase successful", "All items have been bought.");
         } catch (error) {
-            console.error("Error during purchase: ", error);
-            Alert.alert("Error", "There was an issue completing your purchase.");
+            console.error("Error during purchase:", error);
+            Alert.alert("Error", `Purchase failed: ${error}`);
         }
     };
 
